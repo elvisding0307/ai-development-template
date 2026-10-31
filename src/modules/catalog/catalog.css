@@ -1,0 +1,106 @@
+.catalog-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 440px;
+}
+.catalog-search > svg {
+  position: absolute;
+  left: 12px;
+  color: #8e9b86;
+  pointer-events: none;
+}
+.catalog-search > input {
+  width: 100%;
+  max-width: none;
+  padding-left: 36px;
+}
+.catalog-book-title {
+  font-weight: 500 !important;
+  font-size: 13px;
+  max-width: 270px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block !important;
+  text-align: left;
+  padding: 0 !important;
+}
+.catalog-footnote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #97a18e;
+  font-size: 11px;
+  padding: 18px 3px;
+}
+.modal:has(> .catalog-editor),
+.modal:has(> .catalog-detail) {
+  margin: 0 0 0 auto;
+  height: 100vh;
+  max-height: 100vh;
+  max-width: 94vw;
+  width: 530px;
+  border-radius: 12px 0 0 12px;
+  animation: catalog-in 0.18s ease-out;
+}
+.catalog-form-intro {
+  font-size: 12px;
+  color: #86917e;
+  line-height: 1.9;
+  margin: 0 0 25px;
+}
+.catalog-form-intro > span {
+  display: block;
+  font-size: 10px;
+  color: #a2aa9a;
+}
+.catalog-editor [aria-invalid="true"] {
+  border-color: var(--red);
+}
+.catalog-detail-heading {
+  position: relative;
+  margin-bottom: 30px;
+}
+.catalog-detail-heading > .badge {
+  float: right;
+}
+.catalog-detail-heading h3 {
+  font:
+    600 26px "Songti SC",
+    "STSong",
+    serif;
+  line-height: 1.6;
+  margin: 15px 0 7px;
+  overflow-wrap: anywhere;
+}
+.catalog-detail-heading p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.catalog-detail-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  gap: 10px;
+}
+.catalog-detail .summary {
+  margin: 20px 0;
+}
+.catalog-detail .form-actions {
+  justify-content: space-between;
+}
+.catalog-detail + .modal {
+  height: auto;
+}
+@keyframes catalog-in {
+  from {
+    transform: translateX(25px);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

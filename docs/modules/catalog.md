@@ -10,7 +10,7 @@
 
 | 能力 | 功能规格 | 状态 |
 |---|---|---|
-| 录入、编辑、查询及停用实体书 | [图书管理](../features/catalog/book-management.md) | 规划中 |
+| 录入、编辑、查询及停用实体书 | [图书管理](../features/catalog/book-management.md) | 已实现 |
 
 ## 核心业务规则
 
