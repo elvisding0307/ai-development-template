@@ -10,9 +10,9 @@
 
 | 能力 | 功能规格 | 状态 |
 |---|---|---|
-| 校验并登记借出 | [借书登记](../features/circulation/checkout.md) | 规划中 |
-| 办理归还并释放实体书 | [还书登记](../features/circulation/return.md) | 规划中 |
-| 查询当前借阅、逾期和归还历史 | [借阅查询](../features/circulation/loan-query.md) | 规划中 |
+| 校验并登记借出 | [借书登记](../features/circulation/checkout.md) | 已实现 |
+| 办理归还并释放实体书 | [还书登记](../features/circulation/return.md) | 已实现 |
+| 查询当前借阅、逾期和归还历史 | [借阅查询](../features/circulation/loan-query.md) | 已实现 |
 
 ## 核心业务规则
 
@@ -45,3 +45,7 @@ stateDiagram-v2
 ```
 
 逾期是未归还状态上的查询条件，不单独持久化。归还后再次借出创建新记录，不复用旧记录。前端按钮禁用只改善交互，数据库约束和后端事务必须独立保证一致性。
+
+## 验证情况
+
+借书、还书和借阅查询均已在模块 worktree 实现，通过前端构建、模拟 IPC 界面测试及 Rust 事务、并发和日期边界测试；具体覆盖与验收条目见各功能规格。主分支集成、原生桌面验证和人工业务验收由集成阶段继续完成。
