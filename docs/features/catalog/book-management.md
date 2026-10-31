@@ -2,7 +2,7 @@
 
 - 所属模块：[馆藏](../../modules/catalog.md)
 - 状态：已实现
-- 技术验证：本模块变更已通过 `npm run build`、`npm test`（含 6 条馆藏交互测试）、`cargo test --manifest-path src-tauri/Cargo.toml modules::catalog`（6 条 SQLite 集成测试）、Rust 格式及 Clippy 严格检查。
+- 技术验证：本模块变更已通过 `npm run build`、`npm test -- src/modules/catalog/catalog.test.tsx`（8 条馆藏交互测试）、`cargo test --manifest-path src-tauri/Cargo.toml modules::catalog`（6 条 SQLite 集成测试）、Rust 格式及 Clippy 严格检查。
 - 业务验收：待人工验收；单模块自动检查不代表原生桌面和跨模块流程已验收，使用场景见[首版选择](../../project.md#首版业务选择)。
 
 ## 用途与目标
@@ -55,5 +55,5 @@ ISBN 为可选人工记录字段，首版不核验其真实存在，不通过 IS
 ## 本次验证范围
 
 - SQLite 集成测试覆盖编号规范化与重复拒绝、重启持久化、同 ISBN 多副本、编辑后身份与历史快照保留、借出禁止停用、归还后停用及重新启用、字面搜索和 20 条分页、模拟写入失败后的原数据保持。
-- React 测试覆盖筛选条件传递、字段冲突后保留输入、未保存关闭确认、带实体 ID 跳转借书、停用二次确认，以及搜索隐藏新记录时仍可查看保存结果。
+- React 测试覆盖筛选条件传递、字段冲突后保留输入、未保存关闭确认、带实体 ID 跳转借书、停用二次确认，以及搜索隐藏新记录时仍可查看保存结果；另覆盖筛选可借图书的第 2 页唯一记录被后台借出或本页停用后，自动回退到有效末页并重新查询。
 - 原生桌面窗口、实际借出／归还跳转、真实借出与停用的并发竞争由集成阶段核验；本模块尚未宣称这些人工或跨模块验收通过。

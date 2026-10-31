@@ -78,6 +78,61 @@ describe("catalog interactions", () => {
       }),
     );
   });
+  it.each(["background loan", "disable"])(
+    "returns to the valid last page after a %s removes the only row on page two",
+    async (operation) => {
+      const records = Array.from({ length: 21 }, (_, index) => ({
+        ...book,
+        id: index + 1,
+        code: `B${index + 1}`,
+        title: `馆藏 ${index + 1}`,
+      }));
+      let total = 21;
+      api.mockImplementation(async (_module, action, payload) => {
+        const input = payload as { page?: number; id?: number };
+        if (action === "list") {
+          const offset = ((input.page ?? 1) - 1) * 20;
+          return {
+            items: records.slice(0, total).slice(offset, offset + 20),
+            total,
+          };
+        }
+        if (action === "set_enabled") {
+          total = 20;
+          return { ...records[20], enabled: false, status: "disabled" };
+        }
+        return records.find((record) => record.id === input.id) ?? book;
+      });
+      mount();
+      const user = userEvent.setup();
+      await screen.findByRole("button", { name: "馆藏 1" });
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "图书状态" }),
+        "available",
+      );
+      await user.click(screen.getByRole("button", { name: "下一页" }));
+      await screen.findByRole("button", { name: "馆藏 21" });
+      expect(screen.getByText("2 / 2")).toBeTruthy();
+      if (operation === "disable") {
+        await user.click(screen.getByRole("button", { name: "馆藏 21" }));
+        await user.click(
+          await screen.findByRole("button", { name: "停用图书" }),
+        );
+        await user.click(screen.getByRole("button", { name: "确认停用" }));
+      } else {
+        total = 20;
+        fireEvent(window, new Event("library:changed"));
+      }
+      await screen.findByText("1 / 1");
+      expect(screen.getByRole("button", { name: "馆藏 1" })).toBeTruthy();
+      expect(screen.queryByText("2 / 1")).toBeNull();
+      expect(api).toHaveBeenCalledWith("catalog", "list", {
+        search: "",
+        status: "available",
+        page: 1,
+      });
+    },
+  );
   it("keeps entered data and identifies server validation errors", async () => {
     api.mockImplementation(async (_module, action) => {
       if (action === "save")
