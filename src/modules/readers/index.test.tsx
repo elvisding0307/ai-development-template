@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ReadersPage from './index';
+import { changed } from '../../shared/api';
 import type { Reader } from '../../shared/models';
 
 const { mockCall } = vi.hoisted(() => ({ mockCall: vi.fn() }));
@@ -26,6 +27,41 @@ afterEach(cleanup);
 function renderPage() { return render(<ReadersPage route={{ page: 'readers' }} navigate={navigate}/>); }
 
 describe('reader workflows', () => {
+  it('returns to the last valid page when disabling the final enabled reader on page two', async () => {
+    const user = userEvent.setup();
+    const records = Array.from({ length: 21 }, (_, index): Reader => ({ ...reader, id: index + 1, code: `R${index + 1}`, name: index === 20 ? '尾页读者' : `读者${index + 1}` }));
+    mockCall.mockImplementation(async (_module: string, action: string, payload: unknown) => {
+      const input = payload as { status?: string; page?: number; id?: number; enabled?: boolean };
+      if (action === 'get') return records.find(item => item.id === input.id);
+      if (action === 'set_enabled') {
+        const target = records.find(item => item.id === input.id)!;
+        target.enabled = input.enabled!;
+        return { ...target };
+      }
+      if (action === 'list') {
+        const matching = records.filter(item => input.status === 'enabled' ? item.enabled : input.status === 'disabled' ? !item.enabled : true);
+        const offset = ((input.page ?? 1) - 1) * 20;
+        return { items: matching.slice(offset, offset + 20), total: matching.length };
+      }
+      throw new Error('Unexpected action');
+    });
+    vi.mocked(changed).mockImplementationOnce(() => { window.dispatchEvent(new Event('library:changed')); });
+    renderPage();
+    await screen.findByRole('button', { name: '读者1' });
+    await user.selectOptions(screen.getByRole('combobox', { name: '读者状态' }), 'enabled');
+    await screen.findByText('共 21 条记录');
+    await user.click(screen.getByRole('button', { name: '下一页' }));
+    await screen.findByRole('button', { name: '尾页读者' });
+    await user.click(screen.getByRole('button', { name: '停用' }));
+    const confirmation = await screen.findByRole('dialog', { name: '确认停用读者' });
+    await user.click(within(confirmation).getByRole('button', { name: '确认停用' }));
+    await screen.findByText('1 / 1');
+    expect(screen.getByText('共 20 条记录')).toBeTruthy();
+    expect(screen.queryByText('没有找到匹配的读者')).toBeNull();
+    expect(screen.getByRole('button', { name: '读者1' })).toBeTruthy();
+    expect(mockCall).toHaveBeenLastCalledWith('readers', 'list', { search: '', status: 'enabled', page: 1 });
+  });
+
   it('retains input on duplicate code and lets the user correct it', async () => {
     const user = userEvent.setup(); renderPage();
     await screen.findByRole('button', { name: '林小满' });

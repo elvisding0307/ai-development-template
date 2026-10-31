@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRight, Plus, Search, UserRound, Pencil, Check, Ban } from 'lucide-react';
 import { call, changed, errorMessage, type AppError } from '../../shared/api';
 import { useQuery } from '../../shared/hooks';
@@ -94,6 +94,11 @@ export default function ReadersPage({ navigate }: PageProps) {
   const [actionError, setActionError] = useState('');
   const [fetchingStatus, setFetchingStatus] = useState(false);
   const query = useQuery(() => call<ListResult<Reader>>('readers', 'list', { search, status, page }), [search, status, page]);
+  useEffect(() => {
+    if (query.loading || query.error || !query.data) return;
+    const lastPage = Math.max(1, Math.ceil(query.data.total / 20));
+    if (page > lastPage) setPage(lastPage);
+  }, [query.loading, query.error, query.data, page]);
   const filtered = !!search || status !== 'all';
   async function prepareToggle(reader: Reader) {
     setFetchingStatus(true); setActionError('');
