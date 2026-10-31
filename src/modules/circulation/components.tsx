@@ -129,15 +129,23 @@ export function LoanTable({
   select: (l: Loan) => void;
   returnLoan?: (l: Loan) => void;
 }) {
+  const lastPage = Math.max(1, Math.ceil((result?.total ?? 0) / 20));
+  const outsideResult = !!result && page > lastPage;
+  useEffect(() => {
+    // Wait for this query to finish: a retained previous result must not undo
+    // the user's next-page request while new data is still loading.
+    if (outsideResult && !loading && !error) setPage(lastPage);
+  }, [outsideResult, loading, error, lastPage, setPage]);
   return (
     <>
       <QueryState
         loading={loading}
         error={error}
         retry={retry}
-        hasData={!!result}
+        hasData={!!result && !outsideResult}
       />
-      {result && (
+      {outsideResult && !loading && !error && <Loading />}
+      {result && !outsideResult && (
         <>
           <div className="table-wrap">
             <table>

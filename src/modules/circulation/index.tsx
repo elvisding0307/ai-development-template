@@ -3,7 +3,7 @@ import { ArrowRight, BookOpen, Check, Search, UserRound } from "lucide-react";
 import { call, changed, errorMessage } from "../../shared/api";
 import { useQuery } from "../../shared/hooks";
 import type { Book, ListResult, Loan, Reader } from "../../shared/models";
-import type { PageProps } from "../../shared/navigation";
+import type { PageProps, Route } from "../../shared/navigation";
 import {
   Badge,
   Empty,
@@ -22,7 +22,7 @@ export default function CirculationPage({ route, navigate }: PageProps) {
   );
   useEffect(() => {
     setTab(route.tab ?? "checkout");
-  }, [route.tab, route.loanId, route.readerId, route.bookId]);
+  }, [route]);
   return (
     <>
       <PageHeader
@@ -56,26 +56,18 @@ export default function CirculationPage({ route, navigate }: PageProps) {
         </div>
       </div>
       {tab === "checkout" ? (
-        <Checkout readerId={route.readerId} bookId={route.bookId} />
+        <Checkout request={route} />
       ) : (
-        <ReturnDesk
-          loanId={route.loanId}
-          readerId={route.readerId}
-          bookId={route.bookId}
-        />
+        <ReturnDesk request={route} />
       )}
     </>
   );
 }
-function Checkout({
-  readerId: initialReaderId,
-  bookId: initialBookId,
-}: {
-  readerId?: number;
-  bookId?: number;
-}) {
-  const [readerId, setReaderId] = useState<number | undefined>(initialReaderId);
-  const [bookId, setBookId] = useState<number | undefined>(initialBookId);
+function Checkout({ request }: { request: Route }) {
+  const [readerId, setReaderId] = useState<number | undefined>(
+    request.readerId,
+  );
+  const [bookId, setBookId] = useState<number | undefined>(request.bookId);
   const [readerSearch, setReaderSearch] = useState("");
   const [bookSearch, setBookSearch] = useState("");
   const [readerPage, setReaderPage] = useState(1);
@@ -84,12 +76,15 @@ function Checkout({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState<Loan>();
   const [day, setDay] = useState(localDate());
+  // A new navigation request may target the same IDs after the user changed
+  // local selection or completed a checkout. Preserve search filters, but apply
+  // that request again rather than treating equal IDs as an already handled link.
   useEffect(() => {
-    setReaderId(initialReaderId);
-  }, [initialReaderId]);
-  useEffect(() => {
-    setBookId(initialBookId);
-  }, [initialBookId]);
+    setReaderId(request.readerId);
+    setBookId(request.bookId);
+    setSuccess(undefined);
+    setError("");
+  }, [request]);
   useEffect(() => {
     const timer = window.setInterval(() => setDay(localDate()), 1000);
     return () => clearInterval(timer);
@@ -375,15 +370,8 @@ function Checkout({
     </>
   );
 }
-function ReturnDesk({
-  loanId: initialLoanId,
-  readerId,
-  bookId,
-}: {
-  loanId?: number;
-  readerId?: number;
-  bookId?: number;
-}) {
+function ReturnDesk({ request }: { request: Route }) {
+  const { readerId, bookId } = request;
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [day, setDay] = useState(localDate());
@@ -407,9 +395,14 @@ function ReturnDesk({
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
-    if (!initialLoanId) return;
+    setPage(1);
+  }, [readerId, bookId]);
+  useEffect(() => {
+    setSelected(undefined);
+    setError("");
+    if (!request.loanId) return;
     let cancelled = false;
-    call<Loan>("circulation", "get", { id: initialLoanId })
+    call<Loan>("circulation", "get", { id: request.loanId })
       .then((l) => {
         if (!cancelled) setSelected(l);
       })
@@ -419,7 +412,7 @@ function ReturnDesk({
     return () => {
       cancelled = true;
     };
-  }, [initialLoanId]);
+  }, [request]);
   async function submit() {
     if (!selected) return;
     setBusy(true);
