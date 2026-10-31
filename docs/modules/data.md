@@ -10,7 +10,7 @@
 
 | 能力 | 功能规格 | 状态 |
 |---|---|---|
-| 完整备份、校验、确认恢复 | [数据备份与恢复](../features/data/backup-restore.md) | 规划中 |
+| 完整备份、校验、确认恢复 | [数据备份与恢复](../features/data/backup-restore.md) | 已实现 |
 
 ## 核心业务规则
 

@@ -13,6 +13,7 @@ pub struct Store {
     pub path: PathBuf,
     connection: Mutex<Connection>,
     maintaining: AtomicBool,
+    quarantined: AtomicBool,
 }
 impl Store {
     pub fn open(path: impl AsRef<Path>) -> AppResult<Self> {
@@ -44,13 +45,34 @@ impl Store {
                 "数据库版本不兼容，已停止启动，请保留原始数据",
             ));
         }
+        let integrity: String = conn.query_row("PRAGMA quick_check", [], |r| r.get(0))?;
+        if integrity != "ok" || conn.prepare("PRAGMA foreign_key_check")?.exists([])? {
+            return Err(AppError::new(
+                "recovery_required",
+                "数据库一致性检查失败，请保留数据和安全备份",
+            ));
+        }
         Ok(Self {
             path,
             connection: Mutex::new(conn),
             maintaining: AtomicBool::new(false),
+            quarantined: AtomicBool::new(false),
         })
     }
+    pub fn quarantine(&self) {
+        self.quarantined.store(true, Ordering::SeqCst);
+    }
+    fn check_health(&self) -> AppResult<()> {
+        if self.quarantined.load(Ordering::SeqCst) {
+            return Err(AppError::new(
+                "recovery_required",
+                "数据状态异常，已停止业务操作。请关闭客户端并保留安全备份。",
+            ));
+        }
+        Ok(())
+    }
     pub fn with_conn<T>(&self, f: impl FnOnce(&mut Connection) -> AppResult<T>) -> AppResult<T> {
+        self.check_health()?;
         if self.maintaining.load(Ordering::SeqCst) {
             return Err(AppError::new("maintenance", "正在备份或恢复，请稍后重试"));
         }
@@ -58,6 +80,7 @@ impl Store {
             .connection
             .lock()
             .map_err(|_| AppError::new("storage", "数据库状态异常，请重启客户端"))?;
+        self.check_health()?;
         if self.maintaining.load(Ordering::SeqCst) {
             return Err(AppError::new("maintenance", "正在备份或恢复，请稍后重试"));
         }
@@ -67,6 +90,7 @@ impl Store {
         &self,
         f: impl FnOnce(&mut Connection) -> AppResult<T>,
     ) -> AppResult<T> {
+        self.check_health()?;
         if self.maintaining.swap(true, Ordering::SeqCst) {
             return Err(AppError::new("maintenance", "已有备份或恢复任务正在执行"));
         }
