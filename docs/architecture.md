@@ -1,6 +1,6 @@
 # 整体架构
 
-状态为规划中。本文描述目标架构，仓库尚无业务代码或可执行验证入口。
+基础框架已建立并通过下述框架检查。业务模块尚在规划中，将从框架提交分别进入独立 worktree 实施。
 
 ## 技术栈
 
@@ -13,7 +13,7 @@
 | 本地数据 | SQLite + rusqlite | 使用 bundled SQLite 和备份能力，统一由 Rust 访问 |
 | 原生能力 | Tauri 对话框、单实例能力 | 文件选择用于备份恢复，同一数据目录仅允许一个应用实例 |
 
-具体依赖版本与锁文件在实现时建立，不在设计阶段声称已安装或兼容验证。
+已建立 package-lock.json 与 Cargo.lock，Rust 固定为 1.95.0；当前锁定 React 19.3.1、Vite 7.3.7、TypeScript 5.9.3、Tauri Rust 2.12.5 / JS 2.12.4、rusqlite 0.37.0。
 
 ## 整体架构
 
@@ -81,7 +81,7 @@ flowchart LR
 
 ## 验证入口
 
-目前没有 package.json、Cargo.toml 或业务测试，故没有可执行的应用构建／测试命令。本次仅验证文档引用、规格覆盖与规则一致性，不视为应用验证。
+框架已提供 package.json、Cargo.toml 及验证入口：`npm run build`、`npm test`、`cargo test --manifest-path src-tauri/Cargo.toml`、`cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings`。桌面启动为 `npm run tauri dev`，打包为 `npm run tauri build`。框架阶段已通过前端生产构建、2 条 IPC 边界测试、2 条数据库初始化／外来数据库拒绝测试、Rust Clippy 严格检查，以及 Playwright 5 个导航入口和 1280px 布局检查。业务流程及原生桌面验证尚未完成。
 
 实现时建立以下验证入口，并将真实命令和结果补充到本文及相关功能规格：
 
