@@ -10,7 +10,7 @@
 
 | 能力 | 功能规格 | 状态 |
 |---|---|---|
-| 新建、编辑、查询、停用及重新启用读者 | [读者管理](../features/readers/reader-management.md) | 规划中 |
+| 新建、编辑、查询、停用及重新启用读者 | [读者管理](../features/readers/reader-management.md) | 已实现 |
 
 ## 核心业务规则
 
