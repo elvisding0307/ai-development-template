@@ -41,6 +41,6 @@ npm run tauri build
 
 ## 交付与验证
 
-6 个功能均已实现，用户业务验收待进行。[验证记录](docs/verification.md) 区分自动测试、实际桌面操作和未验证平台。
+7 个功能均已实现（含借阅统计），借阅统计已获用户确认，其余验收情况见对应规格。[验证记录](docs/verification.md) 区分自动测试、实际桌面操作和未验证平台。
 
 macOS 正式构建位于 `src-tauri/target/release/bundle/macos/青禾图书管理.app`。当前没有内置示例业务记录，首次启动为空图书室。

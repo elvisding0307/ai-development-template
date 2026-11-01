@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { BookOpen, Library, UsersRound, ArrowLeftRight, ClipboardList, Database, ArrowUpRight } from 'lucide-react';
+import { BookOpen, Library, UsersRound, ArrowLeftRight, ClipboardList, Database, ArrowUpRight, ChartNoAxesCombined } from 'lucide-react';
 import Catalog from './modules/catalog';
 import Readers from './modules/readers';
 import Circulation from './modules/circulation';
 import Loans from './modules/circulation/LoansPage';
 import Data from './modules/data';
+import Statistics from './modules/circulation/StatisticsPage';
 import type { Page, Route } from './shared/navigation';
 const items = [
  { page: 'catalog', label: '图书管理', icon: Library },
  { page: 'readers', label: '读者管理', icon: UsersRound },
  { page: 'circulation', label: '借还工作台', icon: ArrowLeftRight },
  { page: 'loans', label: '借阅记录', icon: ClipboardList },
+ { page: 'statistics', label: '借阅统计', icon: ChartNoAxesCombined },
  { page: 'data', label: '数据管理', icon: Database },
 ] as const;
 export default function App() {
@@ -31,7 +33,7 @@ export default function App() {
    setRoute(next); setVisited(old => new Set([...old, next.page]));
    setRoutes(old => ({ ...old, [next.page]: next }));
  }
- const pages = { catalog: Catalog, readers: Readers, circulation: Circulation, loans: Loans, data: Data };
+ const pages = { catalog: Catalog, readers: Readers, circulation: Circulation, loans: Loans, statistics: Statistics, data: Data };
  return <div className="app-shell"><aside className="sidebar">
    <a className="brand" href="#" onClick={e => { e.preventDefault(); navigate({ page: 'catalog' }); }}><span className="brand-icon"><BookOpen size={25} strokeWidth={1.5}/></span><span>青禾<span className="brand-en">QINGHE LIBRARY</span></span></a>
    <div className="nav-label">图书室工作空间</div>

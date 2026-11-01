@@ -113,9 +113,19 @@ fn all() -> String {
     "all".into()
 }
 
+mod statistics;
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StatisticsInput {}
+
 pub fn handle(store: &Store, action: &str, payload: Value) -> AppResult<Value> {
     let now = Local::now();
     match action {
+        "statistics" => {
+            let _: StatisticsInput = serde_json::from_value(payload)?;
+            statistics::snapshot(store, now.date_naive())
+        }
         "checkout" => {
             let p: Checkout = serde_json::from_value(payload)?;
             Ok(serde_json::to_value(checkout_at(

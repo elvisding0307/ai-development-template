@@ -14,3 +14,11 @@ export interface Loan {
  readerCode: string; readerName: string; bookCode: string; bookTitle: string;
  status: 'active' | 'overdue' | 'returned'; overdueDays: number; returnedLate: boolean;
 }
+
+export interface BorrowingStatistics {
+ asOf: string; generatedAt: string;
+ totals: { books: number; readers: number; activeLoans: number; overdueLoans: number };
+ trend: { date: string; borrowed: number; returned: number }[];
+ popularBooks: { bookId: number; code: string; title: string; borrowCount: number }[];
+ categories: { name: string; count: number }[];
+}
