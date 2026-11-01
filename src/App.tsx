@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookOpen, Library, UsersRound, ArrowLeftRight, ClipboardList, Database, ArrowUpRight } from 'lucide-react';
 import Catalog from './modules/catalog';
 import Readers from './modules/readers';
@@ -17,6 +17,16 @@ export default function App() {
  const [route, setRoute] = useState<Route>({ page: 'catalog' });
  const [visited, setVisited] = useState<Set<Page>>(new Set(['catalog']));
  const [routes, setRoutes] = useState<Partial<Record<Page, Route>>>({ catalog: route });
+ useEffect(() => {
+   const restored = () => {
+     setVisited(new Set(['data']));
+     setRoutes({ data: { page: 'data' } });
+     setRoute({ page: 'data' });
+   };
+   window.addEventListener('library:restored', restored);
+   return () => window.removeEventListener('library:restored', restored);
+ }, []);
+ useEffect(() => { window.scrollTo(0, 0); }, [route.page]);
  function navigate(next: Route) {
    setRoute(next); setVisited(old => new Set([...old, next.page]));
    setRoutes(old => ({ ...old, [next.page]: next }));

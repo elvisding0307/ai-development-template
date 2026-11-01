@@ -2,7 +2,7 @@
 
 - 所属模块：[借阅](../../modules/circulation.md)
 - 状态：已实现
-- 技术验证：本模块已通过 `npm run build`、`npm test`（9 条借阅界面模拟 IPC 测试，另含 2 条框架测试）、`cargo test --manifest-path src-tauri/Cargo.toml`（9 条借阅测试，另含 2 条框架测试）及严格 Clippy 检查。覆盖事务回滚、并发唯一性／名额、日期边界、历史快照、归还幂等、组合查询、同一目标的重复导航，以及结果数量减少后的分页回退。当前为模块 worktree 验证，尚待主分支集成与原生桌面验证。
+- 技术验证：本模块已通过 `npm run build`、`npm test`（9 条借阅界面模拟 IPC 测试，另含 2 条框架测试）、`cargo test --manifest-path src-tauri/Cargo.toml`（9 条借阅测试，另含 2 条框架测试）及严格 Clippy 检查。覆盖事务回滚、并发唯一性／名额、日期边界、历史快照、归还幂等、组合查询、同一目标的重复导航，以及结果数量减少后的分页回退。模块已在主分支完成集成与 macOS 原生流程验证，见[交付验证](../../verification.md)。
 - 业务验收：待人工验收；逾期口径采用首版借期。
 
 ## 用途与目标
