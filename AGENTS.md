@@ -8,7 +8,7 @@
 
 ```text
 AGENTS.md
-.agent/
+.agents/
 └── skills/
     └── ai-development-workflow/
         ├── SKILL.md
@@ -19,18 +19,18 @@ AGENTS.md
             └── feature.md
 ```
 
-完整流程以 [ai-development-workflow](.agent/skills/ai-development-workflow/SKILL.md) 为准；四份文档模板位于其 `assets/` 目录。
+完整流程以 [ai-development-workflow](.agents/skills/ai-development-workflow/SKILL.md) 为准；四份文档模板位于其 `assets/` 目录。
 
 ## 使用方式
 
-- 在本项目进行功能规划、开发或需求变更时，先读取仓库内的 Skill，再按需读取对应模板。不要依赖工具是否自动发现 `.agent/skills/`。
+- 在本项目进行功能规划、开发或需求变更时，先读取仓库内的 Skill，再按需读取对应模板。不要依赖工具是否自动发现 `.agents/skills/`。
 - 新建业务项目时，从基本功能开始划分模块、拆分功能任务，再生成实际项目文档。技术栈和业务模块根据项目要求决定。
 - 引入已有项目时，优先复用现有代码和等价文档，仅补齐本次任务所需的内容。
 - 用户只要求讨论或整理文档时，完成相应工作；用户要求实现时，继续完成开发、验证和文档同步。已明确的业务决定无需重复确认。
 
 可以这样发起任务：
 
-> 读取 .agent/skills/ai-development-workflow/SKILL.md，按其中流程整理这个项目的模块和功能规格。
+> 读取 .agents/skills/ai-development-workflow/SKILL.md，按其中流程整理这个项目的模块和功能规格。
 
 > 按仓库内的 ai-development-workflow 流程实现某项功能，并同步受影响的文档。
 
@@ -61,6 +61,6 @@ docs/
 ## 模板维护
 
 - 本仓库内的 Skill 是本项目的流程来源。修改流程时同步检查四份模板，避免规则与模板不一致。
-- `.agent/skills/` 中的文件是项目内独立副本，与个人 Skills 目录不会自动同步。维护本项目时修改仓库内版本；更新个人安装副本需用户明确要求。
+- `.agents/skills/` 中的文件是项目内独立副本，与个人 Skills 目录不会自动同步。维护本项目时修改仓库内版本；更新个人安装副本需用户明确要求。
 - 功能规格长期维护同一文件。新增、修改、删除需求时，按 Skill 的影响范围规则同步相关文档，区分当前能力与待实现变化。
 - 模板尚无业务代码，因此没有预设构建或测试命令。引入应用后，把实际技术栈与验证入口记录到 `docs/architecture.md`，不要编造执行结果。
